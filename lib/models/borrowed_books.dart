@@ -52,4 +52,16 @@ class BorrowedBooks {
     
     return "${days}D ${hours}H";
   }
+
+  calculateReturnProgress() {
+    final now = DateTime.now();
+    final totalDuration = returnDate?.difference(borrowedDate!);
+    final elapsedDuration = now.difference(borrowedDate!);
+
+    if (totalDuration == null || totalDuration.inSeconds <= 0) {
+      return 0.0;
+    }
+
+    return elapsedDuration.inSeconds / totalDuration.inSeconds;
+  }
 }

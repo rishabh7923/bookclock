@@ -7,11 +7,7 @@ class BookCard extends StatelessWidget {
   final BorrowedBooks book;
   final VoidCallback? onTap;
 
-  const BookCard({
-    super.key,
-    required this.book,
-    this.onTap,
-  });
+  const BookCard({super.key, required this.book, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -23,24 +19,25 @@ class BookCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            book.cover_i != null ? ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.network(
-                'https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg', 
-                height: 130,
-                width: 90,
-                fit: BoxFit.cover,
-                errorBuilder:
-                    (ctx, err, _) => Container(
-                      height: 130,
-                      width: 90,
-                      color: Colors.grey[500],
-                      child: const Icon(Icons.broken_image),
-                    ),
-              ),
-            ) : BookCoverPlaceholder(height: 130, width: 90,),
+            book.cover_i != null
+                ? ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.network(
+                    'https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg',
+                    height: 130,
+                    width: 90,
+                    fit: BoxFit.cover,
+                    errorBuilder:
+                        (ctx, err, _) => Container(
+                          height: 130,
+                          width: 90,
+                          color: Colors.grey[500],
+                          child: const Icon(Icons.broken_image),
+                        ),
+                  ),
+                )
+                : BookCoverPlaceholder(height: 130, width: 90),
 
-            
             const SizedBox(width: 20),
 
             Expanded(
@@ -81,16 +78,28 @@ class BookCard extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            AttributeChip(attribute: book.rating ?? 'N/A', icon: Icons.star),
-                            AttributeChip(attribute: book.pages ?? 'N/A', icon: Icons.pages),
-                            AttributeChip(attribute: book.publishYear ?? 'N/A', icon: Icons.publish_rounded),
-                            AttributeChip(attribute: book.timeLeftBeforeReturn(), icon: Icons.access_time)
+                            AttributeChip(
+                              attribute: book.rating ?? 'N/A',
+                              icon: Icons.star,
+                            ),
+                            AttributeChip(
+                              attribute: book.pages ?? 'N/A',
+                              icon: Icons.pages,
+                            ),
+                            AttributeChip(
+                              attribute: book.publishYear ?? 'N/A',
+                              icon: Icons.publish_rounded,
+                            ),
+                            AttributeChip(
+                              attribute: book.timeLeftBeforeReturn(),
+                              icon: Icons.access_time,
+                            ),
                           ],
                         ),
 
                         LinearProgressIndicator(
                           minHeight: 5,
-                          value: 0.5,
+                          value: book.calculateReturnProgress(),
                           backgroundColor: Colors.grey[200],
                           valueColor: const AlwaysStoppedAnimation<Color>(
                             Colors.green,
