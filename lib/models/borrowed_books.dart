@@ -28,7 +28,7 @@ class BorrowedBooks {
   DateTime? borrowedDate;
   
   @HiveField(8)
-  DateTime? returnDate;
+  DateTime? dueDate;
   
   @HiveField(9)
   double finePerDay;
@@ -42,15 +42,15 @@ class BorrowedBooks {
   @HiveField(12)
   String? customImagePath;
 
-  @HiveField(13)
-  bool isReturned;
+  @HiveField(14)
+  DateTime? returnDate;
 
   BorrowedBooks({
     required this.upc,
     required this.title,
     required this.author,
     required this.borrowedDate,
-    required this.returnDate,
+    required this.dueDate,
     this.finePerDay = 0.0,
     this.rating,
     this.pages,
@@ -59,12 +59,12 @@ class BorrowedBooks {
     this.notes,
     this.borrowerName,
     this.customImagePath,
-    this.isReturned = false,
+    this.returnDate,
   });
 
   String timeLeftBeforeReturn() {
     final now = DateTime.now();
-    final difference = returnDate?.difference(now);
+    final difference = dueDate?.difference(now);
     if (difference == null) return "0D 0H 0M 0S";
 
     final days = difference.inDays;
@@ -77,7 +77,7 @@ class BorrowedBooks {
 
   String timeLeftShort() {
     final now = DateTime.now();
-    final difference = returnDate?.difference(now);
+    final difference = dueDate?.difference(now);
     if (difference == null) return "0D";
 
     final days = difference.inDays;
@@ -87,11 +87,11 @@ class BorrowedBooks {
   }
 
   dynamic calculateReturnProgress() {
-    if (borrowedDate == null || returnDate == null) return 0.0;
-    if (isReturned) return 1.0;
+    if (borrowedDate == null || dueDate == null) return 0.0;
+    if (returnDate != null) return 1.0;
 
     final now = DateTime.now();
-    final totalDuration = returnDate!.difference(borrowedDate!).inSeconds;
+    final totalDuration = dueDate!.difference(borrowedDate!).inSeconds;
     final elapsedDuration = now.difference(borrowedDate!).inSeconds;
 
     if (totalDuration <= 0) return 0.0;

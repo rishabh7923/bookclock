@@ -40,17 +40,34 @@ class BookCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: ColorFiltered(
-                      colorFilter: book.isReturned
-                          ? const ColorFilter.matrix(<double>[
-                              0.2126, 0.7152, 0.0722, 0, 0,
-                              0.2126, 0.7152, 0.0722, 0, 0,
-                              0.2126, 0.7152, 0.0722, 0, 0,
-                              0, 0, 0, 1, 0,
-                            ])
-                          : const ColorFilter.mode(
-                              Colors.transparent,
-                              BlendMode.multiply,
-                            ),
+                      colorFilter:
+                          book.returnDate != null
+                              ? const ColorFilter.matrix(<double>[
+                                0.2126,
+                                0.7152,
+                                0.0722,
+                                0,
+                                0,
+                                0.2126,
+                                0.7152,
+                                0.0722,
+                                0,
+                                0,
+                                0.2126,
+                                0.7152,
+                                0.0722,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                1,
+                                0,
+                              ])
+                              : const ColorFilter.mode(
+                                Colors.transparent,
+                                BlendMode.multiply,
+                              ),
                       child:
                           book.customImagePath != null
                               ? Image.file(
@@ -79,16 +96,22 @@ class BookCard extends StatelessWidget {
                                           width: 90,
                                         ),
                               )
-                              : const BookCoverPlaceholder(height: 130, width: 90),
+                              : const BookCoverPlaceholder(
+                                height: 130,
+                                width: 90,
+                              ),
                     ),
                   ),
                   // Returned tag
-                  if (book.isReturned)
+                  if (book.returnDate != null)
                     Positioned(
                       top: 0,
                       left: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green,
                           borderRadius: const BorderRadius.only(
@@ -107,12 +130,17 @@ class BookCard extends StatelessWidget {
                       ),
                     ),
                   // Overdue tag
-                  if (!book.isReturned && book.returnDate != null && DateTime.now().isAfter(book.returnDate!))
+                  if (book.returnDate == null &&
+                      book.dueDate != null &&
+                      DateTime.now().isAfter(book.dueDate!))
                     Positioned(
                       top: 0,
                       left: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.red,
                           borderRadius: const BorderRadius.only(
@@ -168,17 +196,19 @@ class BookCard extends StatelessWidget {
                         ],
                       ),
 
-                      Column(
+                      if (book.returnDate == null) Column(
                         spacing: 10,
                         children: [
                           Builder(
                             builder: (context) {
                               final now = DateTime.now();
-                              final isOverdue = book.returnDate != null &&
-                                  now.isAfter(book.returnDate!);
-                              final daysLate = isOverdue
-                                  ? now.difference(book.returnDate!).inDays
-                                  : 0;
+                              final isOverdue =
+                                  book.dueDate != null &&
+                                  now.isAfter(book.dueDate!);
+                              final daysLate =
+                                  isOverdue
+                                      ? now.difference(book.dueDate!).inDays
+                                      : 0;
                               final fineAmount = daysLate * book.finePerDay;
 
                               return Column(
@@ -190,7 +220,8 @@ class BookCard extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         AttributeChip(
-                                          attribute: '$daysLate ${daysLate == 1 ? 'day' : 'days'} late',
+                                          attribute:
+                                              '$daysLate ${daysLate == 1 ? 'day' : 'days'} late',
                                           icon: Icons.event_busy,
                                         ),
                                         AttributeChip(
@@ -206,7 +237,7 @@ class BookCard extends StatelessWidget {
                                       children: [
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                              MainAxisAlignment.end,
                                           children: [
                                             AttributeChip(
                                               attribute: book.timeLeftShort(),
@@ -219,10 +250,13 @@ class BookCard extends StatelessWidget {
                                           minHeight: 5,
                                           value: progress,
                                           backgroundColor: Colors.grey[300],
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            Colors.grey,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.grey,
+                                              ),
+                                          borderRadius: BorderRadius.circular(
+                                            2.5,
                                           ),
-                                          borderRadius: BorderRadius.circular(2.5),
                                         ),
                                       ],
                                     ),

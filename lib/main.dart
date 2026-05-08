@@ -4,7 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:libraryapp/core/theme/theme.dart';
 import 'package:libraryapp/models/borrowed_books.dart';
 
-import 'package:libraryapp/screens/splash_screen.dart';
+import 'package:libraryapp/screens/splash/splash_screen.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

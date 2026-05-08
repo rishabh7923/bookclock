@@ -72,7 +72,7 @@ class CompactBookCard extends StatelessWidget {
                                 width: imageWidth,
                               ),
                     ),
-                    if (book.returnDate != null)
+                    if (book.dueDate != null)
                       Positioned(
                         top: 6,
                         right: 6,
@@ -131,25 +131,21 @@ class CompactBookCard extends StatelessWidget {
 
   Color _getStatusColor(BorrowedBooks book) {
     final now = DateTime.now();
-    if (book.returnDate!.isBefore(now)) {
-      return Colors.red;
-    }
-    final daysLeft = book.returnDate!.difference(now).inDays;
-    if (daysLeft <= 3) {
-      return Colors.orange;
-    }
+    if (book.dueDate!.isBefore(now)) return Colors.red;
+    
+    final daysLeft = book.dueDate!.difference(now).inDays;
+    if (daysLeft <= 3) return Colors.orange;
+    
     return Colors.green;
   }
 
   String _getStatusText(BorrowedBooks book) {
     final now = DateTime.now();
-    if (book.returnDate!.isBefore(now)) {
-      return 'Overdue';
-    }
-    final daysLeft = book.returnDate!.difference(now).inDays;
-    if (daysLeft == 0) {
-      return 'Due Today';
-    }
+    if (book.dueDate!.isBefore(now)) return 'Overdue';
+    
+    final daysLeft = book.dueDate!.difference(now).inDays;
+    if (daysLeft == 0) return 'Due Today';
+    
     return '${daysLeft}d left';
   }
 }

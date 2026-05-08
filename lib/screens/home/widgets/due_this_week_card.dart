@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:libraryapp/models/borrowed_books.dart';
-import 'package:libraryapp/screens/book/book_detail_screen.dart';
+import 'package:libraryapp/screens/bookdetail/book_detail_screen.dart';
 import 'package:libraryapp/widgets/book_cover_placeholder.dart';
 
 class DueThisWeekCard extends StatelessWidget {

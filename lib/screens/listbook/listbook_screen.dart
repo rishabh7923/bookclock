@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:libraryapp/models/borrowed_books.dart';
-import 'package:libraryapp/screens/book/book_detail_screen.dart';
-import 'package:libraryapp/screens/home/widgets/book_card.dart';
+import 'package:libraryapp/screens/bookdetail/book_detail_screen.dart';
+import 'package:libraryapp/screens/listbook/widgets/book_card.dart';
 
 class AllBooksScreen extends StatefulWidget {
   const AllBooksScreen({super.key});
@@ -44,8 +44,8 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
     if (_showOverdueOnly) {
       filtered = filtered.where((entry) {
         final book = entry['book'] as BorrowedBooks;
-        if (book.returnDate == null) return false;
-        return book.returnDate!.isBefore(DateTime.now());
+        if (book.dueDate == null) return false;
+        return book.dueDate!.isBefore(DateTime.now());
       }).toList();
     }
 
@@ -53,8 +53,8 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
     if (_showDueSoon) {
       filtered = filtered.where((entry) {
         final book = entry['book'] as BorrowedBooks;
-        if (book.returnDate == null) return false;
-        final daysUntilDue = book.returnDate!.difference(DateTime.now()).inDays;
+        if (book.dueDate == null) return false;
+        final daysUntilDue = book.dueDate!.difference(DateTime.now()).inDays;
         return daysUntilDue >= 0 && daysUntilDue <= 7;
       }).toList();
     }
@@ -63,7 +63,7 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
     if (_showReturnedOnly) {
       filtered = filtered.where((entry) {
         final book = entry['book'] as BorrowedBooks;
-        return book.isReturned == true;
+        return book.returnDate != null;
       }).toList();
     }
 
@@ -78,10 +78,10 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
         case 'date':
           return (bookB.borrowedDate ?? DateTime.now()).compareTo(bookA.borrowedDate ?? DateTime.now());
         case 'dueDate':
-          if (bookA.returnDate == null && bookB.returnDate == null) return 0;
-          if (bookA.returnDate == null) return 1;
-          if (bookB.returnDate == null) return -1;
-          return bookA.returnDate!.compareTo(bookB.returnDate!);
+          if (bookA.dueDate == null && bookB.dueDate == null) return 0;
+          if (bookA.dueDate == null) return 1;
+          if (bookB.dueDate == null) return -1;
+          return bookA.dueDate!.compareTo(bookB.dueDate!);
         case 'title':
         default:
           return bookA.title.toLowerCase().compareTo(bookB.title.toLowerCase());
@@ -298,7 +298,7 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                   if (entry['book'] == null) return false;
                   final book = entry['book'] as BorrowedBooks;
                   // Only filter out returned books if not explicitly showing them
-                  if (!_showReturnedOnly && book.isReturned) return false;
+                  if (!_showReturnedOnly && book.returnDate != null) return false;
                   return true;
                 }).toList();
 

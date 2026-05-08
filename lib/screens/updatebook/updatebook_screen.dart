@@ -41,7 +41,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
   final borrowerController = TextEditingController();
   final notesController = TextEditingController();
   final borrowedDateController = TextEditingController();
-  final returnDateController = TextEditingController();
+  final dueDateController = TextEditingController();
   final ratingController = TextEditingController();
   final pagesController = TextEditingController();
   final publishYearController = TextEditingController();
@@ -77,9 +77,9 @@ class _AddBookScreenState extends State<AddBookScreen> {
             '${book.borrowedDate!.day}/${book.borrowedDate!.month}/${book.borrowedDate!.year}';
       }
 
-      if (book.returnDate != null) {
-        returnDateController.text =
-            '${book.returnDate!.day}/${book.returnDate!.month}/${book.returnDate!.year}';
+      if (book.dueDate != null) {
+        dueDateController.text =
+            '${book.dueDate!.day}/${book.dueDate!.month}/${book.dueDate!.year}';
       }
 
       fineController.text = book.finePerDay.toString();
@@ -111,17 +111,37 @@ class _AddBookScreenState extends State<AddBookScreen> {
 
           final now = DateTime.now();
           borrowedDateController.text = '${now.day}/${now.month}/${now.year}';
-          returnDateController.text =
+          dueDateController.text =
               '${defaultReturnDate.day}/${defaultReturnDate.month}/${defaultReturnDate.year}';
 
           notesController.text = bookDetails?.description ?? '';
 
           isLoading = false;
         });
+      } else {
+        // Book not found in API, but still populate ISBN and default dates
+        setState(() {
+          upcController.text = widget.upc!;
+          
+          final now = DateTime.now();
+          borrowedDateController.text = '${now.day}/${now.month}/${now.year}';
+          dueDateController.text =
+              '${defaultReturnDate.day}/${defaultReturnDate.month}/${defaultReturnDate.year}';
+
+          isLoading = false;
+        });
       }
     } catch (e) {
       print('Error fetching book details: $e');
+      // Even on error, populate ISBN
       setState(() {
+        upcController.text = widget.upc!;
+        
+        final now = DateTime.now();
+        borrowedDateController.text = '${now.day}/${now.month}/${now.year}';
+        dueDateController.text =
+            '${defaultReturnDate.day}/${defaultReturnDate.month}/${defaultReturnDate.year}';
+
         isLoading = false;
       });
     }
@@ -135,7 +155,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
     borrowerController.dispose();
     notesController.dispose();
     borrowedDateController.dispose();
-    returnDateController.dispose();
+    dueDateController.dispose();
     ratingController.dispose();
     pagesController.dispose();
     publishYearController.dispose();
@@ -555,8 +575,8 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                           await showDatePicker(
                                             context: context,
                                             initialDate: DateTime.now(),
-                                            firstDate: DateTime(2000),
-                                            lastDate: DateTime.now(),
+                                            firstDate: DateTime(1900),
+                                            lastDate: DateTime(2100),
                                           );
 
                                       if (pickedDate != null) {
@@ -571,10 +591,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextField(
-                                    controller: returnDateController,
+                                    controller: dueDateController,
                                     readOnly: true,
                                     decoration: _buildInputDecoration(
-                                      'Return Date',
+                                      'Due Date',
                                       prefixIcon: const Icon(
                                         Icons.event_available,
                                         size: 16,
@@ -586,13 +606,13 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                           await showDatePicker(
                                             context: context,
                                             initialDate: defaultReturnDate,
-                                            firstDate: DateTime.now(),
+                                            firstDate: DateTime(1900),
                                             lastDate: DateTime(2100),
                                           );
 
                                       if (pickedDate != null) {
                                         setState(() {
-                                          returnDateController.text =
+                                          dueDateController.text =
                                               '${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
                                         });
                                       }
@@ -739,13 +759,13 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                   );
                                 }
 
-                                // Parse the return date from controller text
-                                final dateParts = returnDateController.text
+                                // Parse the due date from controller text
+                                final dateParts = dueDateController.text
                                     .split('/');
                                 final day = int.parse(dateParts[0]);
                                 final month = int.parse(dateParts[1]);
                                 final year = int.parse(dateParts[2]);
-                                final returnDate = DateTime(year, month, day);
+                                final dueDate = DateTime(year, month, day);
 
                                 final parsedFine =
                                     double.tryParse(fineController.text) ?? 0.0;
@@ -757,7 +777,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                   book.title = titleController.text;
                                   book.author = authorController.text;
                                   book.borrowedDate = borrowedDate;
-                                  book.returnDate = returnDate;
+                                  book.dueDate = dueDate;
                                   book.finePerDay = parsedFine;
                                   book.rating =
                                       ratingController.text.isNotEmpty
@@ -816,7 +836,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                                   'N/A'),
                                       borrowedDate:
                                           borrowedDate ?? DateTime.now(),
-                                      returnDate: returnDate,
+                                      dueDate: dueDate,
                                       finePerDay: parsedFine,
                                       notes:
                                           notesController.text.isNotEmpty

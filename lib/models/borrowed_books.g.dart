@@ -21,7 +21,7 @@ class BorrowedBooksAdapter extends TypeAdapter<BorrowedBooks> {
       title: fields[1] as String,
       author: fields[2] as String,
       borrowedDate: fields[7] as DateTime?,
-      returnDate: fields[8] as DateTime?,
+      dueDate: fields[8] as DateTime?,
       finePerDay: fields[9] as double,
       rating: fields[4] as String?,
       pages: fields[5] as String?,
@@ -30,7 +30,7 @@ class BorrowedBooksAdapter extends TypeAdapter<BorrowedBooks> {
       notes: fields[10] as String?,
       borrowerName: fields[11] as String?,
       customImagePath: fields[12] as String?,
-      isReturned: fields[13] as bool,
+      returnDate: fields[14] as DateTime?,
     );
   }
 
@@ -55,7 +55,7 @@ class BorrowedBooksAdapter extends TypeAdapter<BorrowedBooks> {
       ..writeByte(7)
       ..write(obj.borrowedDate)
       ..writeByte(8)
-      ..write(obj.returnDate)
+      ..write(obj.dueDate)
       ..writeByte(9)
       ..write(obj.finePerDay)
       ..writeByte(10)
@@ -64,8 +64,8 @@ class BorrowedBooksAdapter extends TypeAdapter<BorrowedBooks> {
       ..write(obj.borrowerName)
       ..writeByte(12)
       ..write(obj.customImagePath)
-      ..writeByte(13)
-      ..write(obj.isReturned);
+      ..writeByte(14)
+      ..write(obj.returnDate);
   }
 
   @override
